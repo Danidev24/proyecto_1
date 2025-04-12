@@ -117,7 +117,9 @@ class PLCClient:
                 if registro_estado == 1:
                     print("PLC está enviando datos...")
                     turbidez = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 0, 1)[0]
-                    promedio = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 1, 1)[0]
+                    promedio1 = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 1, 1)[0]
+                    promedio = promedio1/1000
+                    print(f"el promedio leido es ------------- {promedio}")
                     dificultad = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 2, 1)[0]
                     flag = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 3, 1)[0]
 
@@ -128,7 +130,7 @@ class PLCClient:
 
                     self.lista_datos.append([turbidez, promedio, dificultad_texto, flag])
                     print(f"Datos recibidos: {self.lista_datos[-1]}")
-                    time.sleep(10)
+                    time.sleep(2)
 
                 else:
                     print("PLC dejó de enviar. Preparando dosificación...")
@@ -150,7 +152,7 @@ class PLCClient:
                             self.save_to_bigdata(promedio_final, dificultadGuardar, turbidez_final, dosificacion, rango)
                             dosificacion_entera = int(float(dosificacion) * 100)
                             print(f"Enviando dosificación al PLC: {dosificacion_entera}")
-                            self.master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=[dosificacion_entera, 1])
+                            self.master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 4, output_value=[dosificacion_entera, 1])
                         else:
                             print("No se pudo calcular una dosificación válida desde Excel.")
 
